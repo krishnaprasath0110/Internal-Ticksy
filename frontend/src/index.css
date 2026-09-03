@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Dark mode styles */
+.dark {
+  color-scheme: dark;
+}
+
+/* Form inputs in dark mode */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="search"],
+.dark select,
+.dark textarea {
+  @apply bg-gray-800 border-gray-700 text-gray-100;
+  @apply focus:border-blue-500 focus:ring-blue-500;
+  @apply placeholder-gray-400;
+  @apply px-3 py-2;
+}
+
+/* Cards in dark mode */
+.dark .card,
+.dark .bg-white {
+  @apply bg-gray-800 text-gray-100 border-gray-700;
+}
+
+/* Tables in dark mode */
+.dark table {
+  @apply text-gray-100;
+}
+
+.dark thead {
+  @apply bg-gray-700 text-gray-100;
+}
+
+.dark tbody tr {
+  @apply border-gray-700;
+}
+
+.dark tbody tr:hover {
+  @apply bg-gray-700;
+}
+
+/* Buttons in dark mode */
+.dark button.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700;
+}
+
+/* Transitions for theme switching */
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}

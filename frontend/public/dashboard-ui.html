@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticksy — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #f5f6fa;
+  --white:       #ffffff;
+  --s2:          #f8f9fc;
+  --s3:          #f1f3f8;
+  --border:      #e6e9f0;
+  --border2:     #cdd2e0;
+  --text:        #1a1e2e;
+  --text2:       #4a5068;
+  --muted:       #8b92aa;
+  --blue:        #2563eb;
+  --blue-l:      #eff4ff;
+  --blue-b:      #bfdbfe;
+  --green:       #059669;
+  --green-l:     #ecfdf5;
+  --green-b:     #a7f3d0;
+  --amber:       #d97706;
+  --amber-l:     #fffbeb;
+  --amber-b:     #fde68a;
+  --red:         #dc2626;
+  --red-l:       #fef2f2;
+  --red-b:       #fecaca;
+  --teal:        #0891b2;
+  --teal-l:      #ecfeff;
+  --purple:      #7c3aed;
+  --sh1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --sh2: 0 4px 14px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.04);
+  --sh3: 0 8px 28px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.04);
+  --r:   14px;
+  --r2:  8px;
+  --r3:  10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 5px; }
+
+/* ════════════════════════════════════
+   NAV
+════════════════════════════════════ */
+nav {
+  height: 58px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  position: sticky; top: 0; z-index: 300;
+  box-shadow: var(--sh1);
+}
+.logo {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800; font-size: 20px; letter-spacing: -0.5px;
+  color: var(--text);
+}
+.logo .accent { color: var(--blue); }
+.logo-sub {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px; font-weight: 500; color: var(--muted);
+  margin-left: 6px; vertical-align: middle;
+}
+.nav-links { display: flex; gap: 2px; }
+.nav-link {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  padding: 6px 14px; border-radius: var(--r2);
+  border: none; background: none; cursor: pointer; transition: all .15s;
+}
+.nav-link:hover { background: var(--bg); color: var(--text); }
+.nav-link.active { background: var(--blue-l); color: var(--blue); font-weight: 600; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.btn-primary {
+  background: var(--blue); color: #fff;
+  border: none; padding: 7px 16px; border-radius: var(--r2);
+  font-size: 13px; font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+  transition: background .15s;
+}
+.btn-primary:hover { background: #1d4ed8; }
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 10px 3px 3px;
+  border-radius: 20px; background: var(--bg);
+  border: 1px solid var(--border); cursor: pointer;
+}
+.user-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+}
+.user-name { font-size: 12px; font-weight: 600; color: var(--text); }
+
+/* ════════════════════════════════════
+   PAGE LAYOUT
+════════════════════════════════════ */
+.page { max-width: 1360px; margin: 0 auto; padding: 28px 28px 72px; }
+
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.page-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 25px; font-weight: 800; letter-spacing: -0.5px;
+  display: flex; align-items: center; gap: 10px;
+}
+.page-title-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--blue-l);
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.page-sub { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.btn-ghost {
+  background: var(--white); border: 1px solid var(--border2);
+  color: var(--text2); padding: 7px 13px; border-radius: var(--r2);
+  font-size: 12.5px; font-weight: 500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+  box-shadow: var(--sh1); transition: all .15s;
+}
+.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ════════════════════════════════════
+   STAT CARDS
+════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px; margin-bottom: 22px;
+}
+.sc {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 18px;
+  box-shadow: var(--sh1);
+  transition: box-shadow .15s, transform .15s;
+  animation: fadeUp .4s ease both;
+}
+.sc:hover { box-shadow: var(--sh2); transform: translateY(-1px); }
+.sc:nth-child(1){animation-delay:.04s} .sc:nth-child(2){animation-delay:.08s}
+.sc:nth-child(3){animation-delay:.12s} .sc:nth-child(4){animation-delay:.16s}
+.sc:nth-child(5){animation-delay:.20s} .sc:nth-child(6){animation-delay:.24s}
+
+.sc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sc-label { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.sc-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.sc-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 32px; font-weight: 800; letter-spacing: -1.5px; line-height: 1;
+}
+.sc-sub { font-size: 10.5px; color: var(--muted); margin-top: 4px; }
+
+.sc-total .sc-icon { background: var(--blue-l); color: var(--blue); }
+.sc-total .sc-num  { color: var(--blue); }
+.sc-open  .sc-icon { background: var(--amber-l); color: var(--amber); }
+.sc-open  .sc-num  { color: var(--amber); }
+.sc-prog  .sc-icon { background: var(--teal-l); color: var(--teal); }
+.sc-prog  .sc-num  { color: var(--teal); }
+.sc-clos  .sc-icon { background: var(--green-l); color: var(--green); }
+.sc-clos  .sc-num  { color: var(--green); }
+.sc-na    .sc-icon { background: var(--s3); color: var(--muted); }
+.sc-na    .sc-num  { color: var(--muted); }
+.sc-del   .sc-icon { background: var(--red-l); color: var(--red); }
+.sc-del   .sc-num  { color: var(--red); }
+
+/* ════════════════════════════════════
+   PANEL
+════════════════════════════════════ */
+.panel {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); box-shadow: var(--sh1); overflow: hidden;
+  animation: fadeUp .45s ease .15s both;
+  margin-bottom: 20px;
+}
+.panel:last-child { margin-bottom: 0; }
+
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; border-bottom: 1px solid var(--border);
+}
+.panel-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px; font-weight: 700; letter-spacing: -0.2px;
+}
+.panel-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+/* ── BADGE ── */
+.badge { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.b-blue   { background: var(--blue-l); color: var(--blue); }
+.b-green  { background: var(--green-l); color: var(--green); }
+.b-amber  { background: var(--amber-l); color: var(--amber); }
+.b-red    { background: var(--red-l); color: var(--red); }
+.b-muted  { background: var(--s3); color: var(--muted); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 12.5px; font-weight: 700; color: var(--text);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 7px;
+}
+.section-label::before {
+  content: ''; display: inline-block;
+  width: 3px; height: 14px; border-radius: 2px;
+  background: var(--blue);
+}
+
+/* ── TABS ── */
+.tab-bar {
+  display: flex; padding: 0 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s2);
+}
+.tab-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12.5px; font-weight: 600; color: var(--muted);
+  padding: 10px 16px; border: none; background: none; cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1px; transition: all .15s;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── ANALYSIS BODY ── */
+.a-body { padding: 0; }
+
+/* split layout: SLA left | table right */
+.analysis-split {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: 320px;
+}
+.analysis-left {
+  padding: 18px 20px;
+  border-right: 1px solid var(--border);
+}
+.analysis-right {
+  padding: 18px 20px;
+  overflow: auto;
+}
+
+/* SLA 2×2 */
+.sla-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 18px;
+}
+.sla-card {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: var(--r3); padding: 14px 16px;
+  transition: box-shadow .15s;
+}
+.sla-card:hover { box-shadow: var(--sh1); }
+.sla-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.sla-label { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--text2); }
+.sla-icon { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+.sla-pct { font-size: 12px; font-weight: 700; }
+.sla-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 28px; font-weight: 800; letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.sla-bar { height: 4px; border-radius: 4px; background: var(--border); overflow: hidden; margin-bottom: 5px; }
+.sla-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+.sla-desc { font-size: 10.5px; color: var(--muted); }
+
+/* ── DATA TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--muted);
+  padding: 9px 14px; text-align: left;
+  background: var(--s2); border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+}
+.data-table th:not(:first-child) { text-align: center; }
+.data-table td { padding: 10px 14px; border-bottom: 1px solid #edf0f6; font-size: 12.5px; vertical-align: middle; }
+.data-table td:not(:first-child) { text-align: center; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--s2); }
+
+.ag-name { font-weight: 600; font-size: 12.5px; color: var(--text); }
+.ag-dept { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+
+.v-num { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 15px; }
+.v0    { color: #c5cad8; }
+.v-red { color: var(--red); }
+.v-amb { color: var(--amber); }
+.v-grn { color: var(--green); }
+.v-blu { color: var(--blue); }
+
+/* ════════════════════════════════════
+   PRIORITY SECTION
+════════════════════════════════════ */
+.pri-layout {
+  display: grid; grid-template-columns: 320px 1fr;
+}
+.pri-left {
+  padding: 20px 22px;
+  border-right: 1px solid var(--border);
+}
+.pri-mini-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin-bottom: 12px; }
+
+.pri-cards { display: flex; flex-direction: column; gap: 9px; }
+.p-card {
+  border-radius: 9px; padding: 11px 13px; border: 1px solid;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.p-card.high   { background: #fff5f5; border-color: #fecaca; }
+.p-card.medium { background: #fffbeb; border-color: #fde68a; }
+.p-card.low    { background: #f0fdf4; border-color: #bbf7d0; }
+
+.p-card-label {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 2px;
+}
+.p-card-val {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 22px; font-weight: 800; letter-spacing: -.5px;
+}
+.p-card-pct { font-size: 10.5px; color: var(--muted); }
+.p-card.high   .p-card-label, .p-card.high   .p-card-val { color: var(--red); }
+.p-card.medium .p-card-label, .p-card.medium .p-card-val { color: var(--amber); }
+.p-card.low    .p-card-label, .p-card.low    .p-card-val { color: var(--green); }
+
+.p-bar-wrap { width: 72px; }
+.p-bar-lbl { font-size: 9.5px; color: var(--muted); text-align: right; margin-bottom: 3px; }
+.p-bar { height: 5px; background: rgba(0,0,0,.06); border-radius: 5px; overflow: hidden; }
+.p-bar-fill { height: 100%; border-radius: 5px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+.p-card.high   .p-bar-fill { background: var(--red); }
+.p-card.medium .p-bar-fill { background: var(--amber); }
+.p-card.low    .p-bar-fill { background: var(--green); }
+
+/* donut */
+.donut-row {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 16px; padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.donut-legend { display: flex; flex-direction: column; gap: 7px; }
+.dl-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.dl-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dl-lbl  { color: var(--muted); }
+.dl-val  { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 13px; margin-left: 6px; }
+
+/* right: agent priority table */
+.pri-right { padding: 20px 22px; overflow: auto; }
+
+/* ════════════════════════════════════
+   DEPT AGENT PERFORMANCE
+   Layout: agent list (left) | detail (right)
+════════════════════════════════════ */
+.dap-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 420px;
+}
+
+/* ── LEFT: Agent list ── */
+.agent-list-col {
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
+.agent-list-header {
+  padding: 13px 16px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s2);
+  flex-shrink: 0;
+}
+.agent-search-wrap {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--white); border: 1px solid var(--border2);
+  border-radius: var(--r2); padding: 6px 10px;
+  margin-bottom: 6px;
+}
+.agent-search-wrap input {
+  background: none; border: none; outline: none;
+  font-size: 12.5px; font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text); flex: 1;
+}
+.agent-search-wrap input::placeholder { color: var(--muted); }
+.agent-count-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.agent-count { font-size: 10.5px; color: var(--muted); font-weight: 500; }
+.clear-sel-btn {
+  font-size: 10.5px; color: var(--blue); font-weight: 600;
+  background: none; border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: 0;
+}
+.clear-sel-btn:hover { text-decoration: underline; }
+
+.agent-list-scroll {
+  overflow-y: auto;
+  flex: 1;
+  max-height: 440px;
+}
+
+.agent-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0f2f7;
+  cursor: pointer; transition: background .12s;
+  border-left: 3px solid transparent;
+}
+.agent-row:hover { background: var(--s2); }
+.agent-row.selected {
+  background: var(--blue-l);
+  border-left-color: var(--blue);
+}
+.agent-row:last-child { border-bottom: none; }
+
+.a-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.a-info .a-name { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.a-info .a-email { font-size: 10.5px; color: var(--muted); }
+
+/* ── LEFT: Detail panel ── */
+.agent-detail-col {
+  display: flex; flex-direction: column;
+  border-right: none;
+}
+
+.agent-empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%; min-height: 420px;
+  gap: 10px; color: var(--muted); font-size: 13px;
+  padding: 30px;
+}
+.agent-empty-icon { font-size: 36px; opacity: .25; }
+.agent-empty-state strong { font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; color: var(--text2); }
+
+/* detail header */
+.detail-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.detail-agent-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px; font-weight: 800; color: var(--text);
+}
+.detail-agent-meta { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+
+/* inner tab bar for detail */
+.inner-tab-bar {
+  display: flex; padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s2); flex-shrink: 0;
+}
+.inner-tab {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  padding: 9px 14px; border: none; background: none; cursor: pointer;
+  border-bottom: 2.5px solid transparent; margin-bottom: -1px;
+  transition: all .15s;
+}
+.inner-tab:hover { color: var(--text2); }
+.inner-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+.inner-pane { display: none; }
+.inner-pane.active { display: block; }
+
+/* agent stat strip */
+.agent-stat-strip {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.ag-sc {
+  padding: 14px 16px;
+  border-right: 1px solid var(--border);
+}
+.ag-sc:last-child { border-right: none; }
+.ag-sc-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin-bottom: 3px; }
+.ag-sc-val {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 24px; font-weight: 800; letter-spacing: -1px;
+}
+.ag-sc-pct { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.ag-sc-bar { height: 3px; border-radius: 3px; margin-top: 5px; }
+
+/* overview body */
+.overview-body { padding: 16px 20px; }
+
+/* ── CATEGORY CARDS ── */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  padding: 16px 20px;
+}
+.cat-card {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 15px;
+  transition: box-shadow .15s;
+}
+.cat-card:hover { box-shadow: var(--sh1); }
+
+.cat-card-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cat-card-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 12.5px; font-weight: 700; color: var(--text); line-height: 1.35;
+}
+.cat-card-dept { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.cat-total-badge {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 18px; font-weight: 800; color: var(--blue);
+  flex-shrink: 0; margin-left: 8px;
+}
+
+.cat-status-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.cat-status-row:last-child { margin-bottom: 0; }
+.cat-status-lbl {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text2); min-width: 82px;
+}
+.cat-status-ico {
+  width: 14px; height: 14px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; flex-shrink: 0;
+}
+.cat-bar-wrap { flex: 1; height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 0 8px; }
+.cat-bar-fill { height: 100%; border-radius: 3px; }
+.cat-val { font-size: 11px; font-weight: 700; min-width: 44px; text-align: right; }
+
+/* cat empty */
+.cat-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 20px;
+  color: var(--muted); gap: 8px; font-size: 12.5px;
+}
+.cat-empty-icon { font-size: 28px; opacity: .25; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .pri-layout { grid-template-columns: 1fr; }
+  .dap-layout { grid-template-columns: 1fr; }
+  .agent-list-col { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="logo">Tick<span class="accent">sy</span><span class="logo-sub">by Futurense</span></div>
+  <div class="nav-links">
+    <button class="nav-link active">Dashboard</button>
+    <button class="nav-link">Tickets</button>
+    <button class="nav-link">New Ticket</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-primary">＋ New Ticket</button>
+    <div class="user-chip">
+      <div class="user-av">C</div>
+      <span class="user-name">cmanager1</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <div class="page-title-icon">⊞</div>Dashboard
+      </div>
+      <div class="page-sub">Last updated: 06 Mar 2026 · 12:51</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-ghost">📅 This Week</button>
+      <button class="btn-ghost">⬇ Export</button>
+      <button class="btn-ghost" id="refreshBtn">↻ Refresh</button>
+    </div>
+  </div>
+
+  <!-- ① STAT CARDS -->
+  <div class="stats-grid">
+    <div class="sc sc-total">
+      <div class="sc-top"><span class="sc-label">Total Tickets</span><div class="sc-icon">🎫</div></div>
+      <div class="sc-num">12</div>
+      <div class="sc-sub">All tickets</div>
+    </div>
+    <div class="sc sc-open">
+      <div class="sc-top"><span class="sc-label">Open</span><div class="sc-icon">⚠</div></div>
+      <div class="sc-num">11</div>
+      <div class="sc-sub">Awaiting action</div>
+    </div>
+    <div class="sc sc-prog">
+      <div class="sc-top"><span class="sc-label">In Progress</span><div class="sc-icon">⏳</div></div>
+      <div class="sc-num">0</div>
+      <div class="sc-sub">Being worked on</div>
+    </div>
+    <div class="sc sc-clos">
+      <div class="sc-top"><span class="sc-label">Closed</span><div class="sc-icon">✓</div></div>
+      <div class="sc-num">1</div>
+      <div class="sc-sub">Resolved</div>
+    </div>
+    <div class="sc sc-na">
+      <div class="sc-top"><span class="sc-label">Not Applicable</span><div class="sc-icon">⊘</div></div>
+      <div class="sc-num">0</div>
+      <div class="sc-sub">Excluded</div>
+    </div>
+    <div class="sc sc-del">
+      <div class="sc-top"><span class="sc-label">Delayed</span><div class="sc-icon">🕐</div></div>
+      <div class="sc-num">12</div>
+      <div class="sc-sub">Past SLA</div>
+    </div>
+  </div>
+
+  <!-- ② CLOSED / OPEN TICKET ANALYSIS -->
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title">Closed / Open Ticket Analysis</div>
+        <div class="panel-sub">SLA response time tracking and agent-wise breakdown</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <span class="badge b-green">1 Closed</span>
+        <span class="badge b-amber">11 Open</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchMain('closed', this)">Closed Tickets</button>
+      <button class="tab-btn" onclick="switchMain('open', this)">Open Tickets</button>
+    </div>
+
+    <!-- CLOSED PANE -->
+    <div class="tab-pane active" id="mp-closed">
+      <div class="a-body">
+        <div class="analysis-split">
+          <!-- LEFT: SLA cards -->
+          <div class="analysis-left">
+            <div class="section-label" style="margin-bottom:14px">SLA Response Time</div>
+            <div class="sla-grid" style="grid-template-columns:1fr;gap:9px;margin-bottom:0">
+              <div class="sla-card">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--green-l);color:var(--green)">✓</div>Within 8 Hours</div>
+                  <span class="sla-pct" style="color:var(--muted)">0%</span>
+                </div>
+                <div class="sla-num" style="color:var(--muted)">0</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:0%;background:var(--green)"></div></div>
+                <div class="sla-desc">Excellent response time</div>
+              </div>
+              <div class="sla-card">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--blue-l);color:var(--blue)">✓</div>Within 24 Hours</div>
+                  <span class="sla-pct" style="color:var(--muted)">0%</span>
+                </div>
+                <div class="sla-num" style="color:var(--muted)">0</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:0%;background:var(--blue)"></div></div>
+                <div class="sla-desc">Good response time</div>
+              </div>
+              <div class="sla-card">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--amber-l);color:var(--amber)">🕐</div>Within 48 Hours</div>
+                  <span class="sla-pct" style="color:var(--muted)">0%</span>
+                </div>
+                <div class="sla-num" style="color:var(--muted)">0</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:0%;background:var(--amber)"></div></div>
+                <div class="sla-desc">Acceptable response time</div>
+              </div>
+              <div class="sla-card" style="background:var(--red-l);border-color:var(--red-b)">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--red-l);color:var(--red)">⚠</div>Beyond 48 Hours</div>
+                  <span class="sla-pct" style="color:var(--red);font-weight:800">100%</span>
+                </div>
+                <div class="sla-num" style="color:var(--red)">1</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:100%;background:var(--red)"></div></div>
+                <div class="sla-desc" style="color:var(--red)">Needs improvement</div>
+              </div>
+            </div>
+          </div>
+          <!-- RIGHT: Agent table -->
+          <div class="analysis-right">
+            <div class="section-label" style="margin-bottom:14px">Agent-wise Closed Ticket Breakdown</div>
+            <table class="data-table">
+              <thead><tr>
+                <th>Agent</th><th>≤ 8h</th><th>≤ 24h</th><th>≤ 48h</th>
+                <th style="color:var(--red)">&gt; 48h</th><th>Total Closed</th>
+              </tr></thead>
+              <tbody>
+                <tr><td><div class="ag-name">agent 1</div><div class="ag-dept">Technical</div></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v-red">1</span></td>
+                  <td><span class="v-num v-blu">1</span></td></tr>
+                <tr><td><div class="ag-name">Akash</div><div class="ag-dept">Technical</div></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+                <tr><td><div class="ag-name">Anil</div><div class="ag-dept">Technical</div></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+                <tr><td><div class="ag-name">multi2</div><div class="ag-dept">Delivery · Technical · Check</div></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+                <tr><td><div class="ag-name">multi1</div><div class="ag-dept">Delivery · Technical</div></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+                <tr><td><div class="ag-name">multi3</div><div class="ag-dept">Delivery · Technical</div></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPEN PANE -->
+    <div class="tab-pane" id="mp-open">
+      <div class="a-body">
+        <div class="analysis-split">
+          <!-- LEFT: Ageing bands -->
+          <div class="analysis-left">
+            <div class="section-label" style="margin-bottom:14px">Ticket Ageing Bands</div>
+            <div class="sla-grid" style="grid-template-columns:1fr;gap:9px;margin-bottom:0">
+              <div class="sla-card">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--green-l);color:var(--green)">⚡</div>Within 24 Hours</div>
+                  <span class="sla-pct" style="color:var(--muted)">0%</span>
+                </div>
+                <div class="sla-num" style="color:var(--muted)">0</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:0%;background:var(--green)"></div></div>
+                <div class="sla-desc">Recently created</div>
+              </div>
+              <div class="sla-card">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--blue-l);color:var(--blue)">📋</div>Within 48 Hours</div>
+                  <span class="sla-pct" style="color:var(--muted)">0%</span>
+                </div>
+                <div class="sla-num" style="color:var(--muted)">0</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:0%;background:var(--blue)"></div></div>
+                <div class="sla-desc">Moderate age</div>
+              </div>
+              <div class="sla-card" style="background:var(--red-l);border-color:var(--red-b)">
+                <div class="sla-top">
+                  <div class="sla-label"><div class="sla-icon" style="background:var(--red-l);color:var(--red)">🔴</div>Beyond 48 Hours</div>
+                  <span class="sla-pct" style="color:var(--red);font-weight:800">100%</span>
+                </div>
+                <div class="sla-num" style="color:var(--red)">11</div>
+                <div class="sla-bar"><div class="sla-fill" style="width:100%;background:var(--red)"></div></div>
+                <div class="sla-desc" style="color:var(--red)">Needs attention</div>
+              </div>
+            </div>
+          </div>
+          <!-- RIGHT: Agent table -->
+          <div class="analysis-right">
+            <div class="section-label" style="margin-bottom:14px">Agent-wise Open Ticket Breakdown</div>
+            <table class="data-table">
+              <thead><tr>
+                <th>Agent</th><th>Dept</th>
+                <th>0–24h</th><th>24–48h</th>
+                <th style="color:var(--red)">48h+</th><th>Total Open</th>
+              </tr></thead>
+              <tbody>
+                <tr><td><div class="ag-name">Akash</div></td><td><span class="ag-dept">Technical</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v-red">9</span></td><td><span class="v-num v-blu">9</span></td></tr>
+                <tr><td><div class="ag-name">multi2</div></td><td><span class="ag-dept">Tech · Check · Delivery</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v-red">8</span></td><td><span class="v-num v-blu">8</span></td></tr>
+                <tr><td><div class="ag-name">Anil</div></td><td><span class="ag-dept">Technical</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v-red">3</span></td><td><span class="v-num v-blu">3</span></td></tr>
+                <tr><td><div class="ag-name">agent 1</div></td><td><span class="ag-dept">Technical</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+                <tr><td><div class="ag-name">multi1</div></td><td><span class="ag-dept">Delivery · Technical</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+                <tr><td><div class="ag-name">multi3</div></td><td><span class="ag-dept">Delivery · Technical</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td>
+                  <td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /TICKET ANALYSIS -->
+
+  <!-- ③ PRIORITY METRICS -->
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title">Priority Metrics</div>
+        <div class="panel-sub">Overall distribution and per-agent priority breakdown</div>
+      </div>
+      <span class="badge b-blue">12 Total Tickets</span>
+    </div>
+    <div class="pri-layout">
+      <div class="pri-left">
+        <div class="pri-mini-head">Overall Distribution</div>
+        <div class="pri-cards">
+          <div class="p-card high">
+            <div><div class="p-card-label">High Priority</div><div class="p-card-val">0</div><div class="p-card-pct">0.0% of total</div></div>
+            <div class="p-bar-wrap"><div class="p-bar-lbl">0%</div><div class="p-bar"><div class="p-bar-fill" style="width:0%"></div></div></div>
+          </div>
+          <div class="p-card medium">
+            <div><div class="p-card-label">Medium Priority</div><div class="p-card-val">11</div><div class="p-card-pct">91.7% of total</div></div>
+            <div class="p-bar-wrap"><div class="p-bar-lbl">91.7%</div><div class="p-bar"><div class="p-bar-fill" style="width:91.7%"></div></div></div>
+          </div>
+          <div class="p-card low">
+            <div><div class="p-card-label">Low Priority</div><div class="p-card-val">1</div><div class="p-card-pct">8.3% of total</div></div>
+            <div class="p-bar-wrap"><div class="p-bar-lbl">8.3%</div><div class="p-bar"><div class="p-bar-fill" style="width:8.3%"></div></div></div>
+          </div>
+        </div>
+        <div class="donut-row">
+          <svg width="76" height="76" viewBox="0 0 76 76" style="transform:rotate(-90deg);flex-shrink:0">
+            <circle cx="38" cy="38" r="29" fill="none" stroke="#eef0f5" stroke-width="11"/>
+            <circle cx="38" cy="38" r="29" fill="none" stroke="#d97706" stroke-width="11"
+              stroke-dasharray="167 182" stroke-dashoffset="0" stroke-linecap="round"/>
+            <circle cx="38" cy="38" r="29" fill="none" stroke="#059669" stroke-width="11"
+              stroke-dasharray="15 182" stroke-dashoffset="-167" stroke-linecap="round"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="dl-item"><div class="dl-dot" style="background:var(--red)"></div><span class="dl-lbl">High</span><span class="dl-val" style="color:var(--red)">0</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--amber)"></div><span class="dl-lbl">Medium</span><span class="dl-val" style="color:var(--amber)">11</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div><span class="dl-lbl">Low</span><span class="dl-val" style="color:var(--green)">1</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pri-right">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:12px">Agent-wise Priority Distribution</div>
+        <table class="data-table">
+          <thead><tr>
+            <th>Agent</th>
+            <th style="color:var(--red)">High</th>
+            <th style="color:var(--amber)">Medium</th>
+            <th style="color:var(--green)">Low</th>
+            <th>Total</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><div class="ag-name">Akash</div><div class="ag-dept">Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-amb">9</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-blu">9</span></td></tr>
+            <tr><td><div class="ag-name">multi2</div><div class="ag-dept">Tech · Check · Delivery</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-amb">8</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-blu">8</span></td></tr>
+            <tr><td><div class="ag-name">Anil</div><div class="ag-dept">Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-amb">3</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-blu">3</span></td></tr>
+            <tr><td><div class="ag-name">agent 1</div><div class="ag-dept">Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v-grn">1</span></td><td><span class="v-num v-blu">1</span></td></tr>
+            <tr><td><div class="ag-name">multi1</div><div class="ag-dept">Delivery · Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+            <tr><td><div class="ag-name">multi3</div><div class="ag-dept">Delivery · Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+            <tr><td><div class="ag-name">Jeevan</div><div class="ag-dept">Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+            <tr><td><div class="ag-name">check13</div><div class="ag-dept">Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+            <tr><td><div class="ag-name">manager 1</div><div class="ag-dept">Delivery · Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+            <tr><td><div class="ag-name">agent5</div><div class="ag-dept">Technical</div></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td><td><span class="v-num v0">0</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div><!-- /PRIORITY -->
+
+  <!-- ④ DEPARTMENT AGENT PERFORMANCE -->
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-title">Department Agent Performance</div>
+        <div class="panel-sub">Select an agent from the list to view detailed ticket metrics and category breakdown</div>
+      </div>
+      <span class="badge b-blue" id="agentCountBadge">15 Agents</span>
+    </div>
+
+    <div class="dap-layout">
+
+      <!-- LEFT: scrollable agent list -->
+      <div class="agent-list-col">
+        <div class="agent-list-header">
+          <div class="agent-search-wrap">
+            <span style="color:var(--muted);font-size:13px">🔍</span>
+            <input type="text" placeholder="Search agents…" id="agentSearchInput" oninput="filterAgents()">
+          </div>
+          <div class="agent-count-row">
+            <span class="agent-count" id="agentCountLabel">15 agents found</span>
+            <button class="clear-sel-btn" onclick="clearAgentSelection()" id="clearSelBtn" style="display:none">Clear</button>
+          </div>
+        </div>
+        <div class="agent-list-scroll" id="agentListScroll">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- RIGHT: detail area -->
+      <div class="agent-detail-col" id="agentDetailCol">
+        <div class="agent-empty-state" id="agentEmptyState">
+          <div class="agent-empty-icon">👤</div>
+          <strong>Select an agent to view metrics</strong>
+          <span>Click any agent from the list on the left to see their ticket status and category breakdown.</span>
+        </div>
+
+        <!-- Detail content (hidden until agent selected) -->
+        <div id="agentDetailContent" style="display:none;flex:1;flex-direction:column">
+
+          <!-- Detail header -->
+          <div class="detail-header">
+            <div>
+              <div class="detail-agent-name" id="detailName">—</div>
+              <div class="detail-agent-meta" id="detailMeta">—</div>
+            </div>
+            <button class="btn-ghost" style="font-size:11.5px;padding:4px 10px" onclick="clearAgentSelection()">✕ Clear</button>
+          </div>
+
+          <!-- Inner tabs -->
+          <div class="inner-tab-bar">
+            <button class="inner-tab active" onclick="switchInner('overview', this)">📊 Overview</button>
+            <button class="inner-tab" onclick="switchInner('categories', this)">📂 Category Breakdown</button>
+          </div>
+
+          <!-- OVERVIEW inner pane -->
+          <div class="inner-pane active" id="ip-overview">
+            <div class="agent-stat-strip" id="agentStatStrip">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- CATEGORIES inner pane -->
+          <div class="inner-pane" id="ip-categories">
+            <div id="catContent"><!-- filled by JS --></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /DEPT AGENT PERF -->
+
+</div><!-- /page -->
+
+<script>
+// ════════════════════════════
+//  AGENT DATA
+// ════════════════════════════
+const AGENTS = [
+  {
+    name: 'manager 1', email: 'manager1@gmail.com', dept: 'Delivery, Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 },
+    cats: []
+  },
+  {
+    name: 'agent 1', email: 'agent1@gmail.com', dept: 'Technical',
+    total: 1, open: 0, inprog: 0, closed: 1, na: 0, delayed: 1,
+    ageing: { h24: 0, h48: 0, h48p: 0 },
+    cats: [
+      { name: 'Zoom Session Access & Recordings', dept: 'Technical', total: 1, open: 0, inprog: 0, closed: 1, na: 0, delayed: 1 },
+      { name: 'Proctored Exam / Assessment Support', dept: 'Technical', total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0 },
+      { name: 'Course Progress Tracking Issue', dept: 'Technical', total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0 },
+      { name: 'Calendar & Event Scheduling Issues', dept: 'Technical', total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0 },
+    ]
+  },
+  {
+    name: 'agent5', email: 'agent5@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'agent7', email: 'agent7@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'agent8', email: 'agent8@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'Akash', email: 'akash@gmail.com', dept: 'Technical',
+    total: 9, open: 9, inprog: 0, closed: 0, na: 0, delayed: 9,
+    ageing: { h24: 0, h48: 0, h48p: 9 },
+    cats: [
+      { name: 'Technical Support', dept: 'Technical', total: 9, open: 9, inprog: 0, closed: 0, na: 0, delayed: 9 }
+    ]
+  },
+  {
+    name: 'Anil', email: 'anil@gmail.com', dept: 'Technical',
+    total: 3, open: 3, inprog: 0, closed: 0, na: 0, delayed: 3,
+    ageing: { h24: 0, h48: 0, h48p: 3 },
+    cats: [
+      { name: 'Technical Support', dept: 'Technical', total: 3, open: 3, inprog: 0, closed: 0, na: 0, delayed: 3 }
+    ]
+  },
+  {
+    name: 'multi1', email: 'multi1@gmail.com', dept: 'Delivery, Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'multi2', email: 'multi2@gmail.com', dept: 'Technical, Check, Delivery',
+    total: 8, open: 8, inprog: 0, closed: 0, na: 0, delayed: 8,
+    ageing: { h24: 0, h48: 0, h48p: 8 },
+    cats: [
+      { name: 'Technical Support', dept: 'Technical', total: 5, open: 5, inprog: 0, closed: 0, na: 0, delayed: 5 },
+      { name: 'Delivery Check', dept: 'Check, Delivery', total: 3, open: 3, inprog: 0, closed: 0, na: 0, delayed: 3 }
+    ]
+  },
+  {
+    name: 'multi3', email: 'multi3@gmail.com', dept: 'Delivery, Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'Jeevan', email: 'jeevan@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'check13', email: 'check13@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'agent9', email: 'agent9@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'agent10', email: 'agent10@gmail.com', dept: 'Technical',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+  {
+    name: 'agent11', email: 'agent11@gmail.com', dept: 'Technical, Delivery',
+    total: 0, open: 0, inprog: 0, closed: 0, na: 0, delayed: 0,
+    ageing: { h24: 0, h48: 0, h48p: 0 }, cats: []
+  },
+];
+
+const GRADIENTS = [
+  'linear-gradient(135deg,#7c3aed,#2563eb)',
+  'linear-gradient(135deg,#059669,#0891b2)',
+  'linear-gradient(135deg,#d97706,#dc2626)',
+  'linear-gradient(135deg,#2563eb,#059669)',
+  'linear-gradient(135deg,#dc2626,#7c3aed)',
+  'linear-gradient(135deg,#0891b2,#7c3aed)',
+  'linear-gradient(135deg,#059669,#d97706)',
+  'linear-gradient(135deg,#7c3aed,#059669)',
+  'linear-gradient(135deg,#0891b2,#dc2626)',
+  'linear-gradient(135deg,#d97706,#7c3aed)',
+];
+
+let selectedIdx = -1;
+
+// ════════════════════════════
+//  RENDER AGENT LIST
+// ════════════════════════════
+function renderAgentList(filter = '') {
+  const scroll = document.getElementById('agentListScroll');
+  const f = filter.trim().toLowerCase();
+  let count = 0;
+  scroll.innerHTML = '';
+
+  AGENTS.forEach((agent, i) => {
+    if (f && !agent.name.toLowerCase().includes(f) && !agent.email.toLowerCase().includes(f)) return;
+    count++;
+    const row = document.createElement('div');
+    row.className = 'agent-row' + (selectedIdx === i ? ' selected' : '');
+    row.innerHTML = `
+      <div class="a-av" style="background:${GRADIENTS[i % GRADIENTS.length]}">${agent.name[0].toUpperCase()}</div>
+      <div class="a-info">
+        <div class="a-name">${agent.name}</div>
+        <div class="a-email">${agent.email}</div>
+      </div>`;
+    row.addEventListener('click', () => selectAgent(i));
+    scroll.appendChild(row);
+  });
+
+  document.getElementById('agentCountLabel').textContent = count + ' agent' + (count !== 1 ? 's' : '') + ' found';
+}
+
+// ════════════════════════════
+//  SELECT AGENT
+// ════════════════════════════
+function selectAgent(idx) {
+  selectedIdx = idx;
+  const agent = AGENTS[idx];
+
+  // update list highlight
+  renderAgentList(document.getElementById('agentSearchInput').value);
+
+  // show detail
+  document.getElementById('agentEmptyState').style.display = 'none';
+  const detail = document.getElementById('agentDetailContent');
+  detail.style.display = 'flex';
+
+  // header
+  document.getElementById('detailName').textContent = agent.name + "'s Metrics";
+  document.getElementById('detailMeta').textContent = agent.dept + '  ·  ' + agent.total + ' Total Ticket' + (agent.total !== 1 ? 's' : '');
+
+  // show clear btn
+  document.getElementById('clearSelBtn').style.display = '';
+
+  // stat strip
+  const statDefs = [
+    { label: 'Total Tickets', val: agent.total, pct: '100%',         color: '#2563eb', bg: '#eff4ff' },
+    { label: 'Open Tickets',  val: agent.open,  pct: pct(agent.open,   agent.total), color: '#d97706', bg: '#fffbeb' },
+    { label: 'In Progress',   val: agent.inprog,pct: pct(agent.inprog, agent.total), color: '#0891b2', bg: '#ecfeff' },
+    { label: 'Closed',        val: agent.closed,pct: pct(agent.closed, agent.total), color: '#059669', bg: '#ecfdf5' },
+    { label: 'Delayed',       val: agent.delayed,pct:pct(agent.delayed,agent.total), color: '#dc2626', bg: '#fef2f2' },
+  ];
+  document.getElementById('agentStatStrip').innerHTML = statDefs.map(s => `
+    <div class="ag-sc">
+      <div class="ag-sc-label">${s.label}</div>
+      <div class="ag-sc-val" style="color:${s.color}">${s.val}</div>
+      <div class="ag-sc-pct">${s.pct} of total</div>
+      <div class="ag-sc-bar" style="background:${s.bg}">
+        <div style="height:3px;width:${s.pct};background:${s.color};border-radius:3px;transition:width 1s ease"></div>
+      </div>
+    </div>`).join('');
+
+  // categories
+  buildCategoryContent(agent);
+
+  // reset inner tab to overview
+  document.querySelectorAll('.inner-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.inner-pane').forEach(p => p.classList.remove('active'));
+  document.querySelector('.inner-tab').classList.add('active');
+  document.getElementById('ip-overview').classList.add('active');
+}
+
+function pct(val, total) {
+  if (!total) return '0%';
+  return Math.round(val / total * 100) + '%';
+}
+
+function pctNum(val, total) {
+  if (!total) return 0;
+  return Math.round(val / total * 100);
+}
+
+// ════════════════════════════
+//  BUILD CATEGORY CONTENT
+// ════════════════════════════
+function buildCategoryContent(agent) {
+  const box = document.getElementById('catContent');
+  if (!agent.cats || agent.cats.length === 0) {
+    box.innerHTML = `
+      <div class="cat-empty">
+        <div class="cat-empty-icon">📂</div>
+        <strong style="font-family:'Bricolage Grotesque',sans-serif;color:var(--text2)">No category data</strong>
+        <span>This agent has no category breakdown available.</span>
+      </div>`;
+    return;
+  }
+
+  const STATUS = [
+    { key: 'open',   label: 'Open',          color: '#d97706', bg: '#fffbeb', ico: '⚠' },
+    { key: 'inprog', label: 'In Progress',   color: '#0891b2', bg: '#ecfeff', ico: '⏳' },
+    { key: 'closed', label: 'Closed',        color: '#059669', bg: '#ecfdf5', ico: '✓' },
+    { key: 'na',     label: 'Not Applicable',color: '#8b92aa', bg: '#f1f3f8', ico: '⊘' },
+    { key: 'delayed',label: 'Delayed',       color: '#dc2626', bg: '#fef2f2', ico: '🕐' },
+  ];
+
+  box.innerHTML = `<div class="cat-grid">${agent.cats.map(cat => {
+    const max = Math.max(...STATUS.map(s => cat[s.key]), 1);
+    return `
+    <div class="cat-card">
+      <div class="cat-card-head">
+        <div>
+          <div class="cat-card-title">${cat.name}</div>
+          <div class="cat-card-dept">${cat.dept}</div>
+        </div>
+        <div class="cat-total-badge">${cat.total}</div>
+      </div>
+      ${STATUS.map(s => `
+      <div class="cat-status-row">
+        <div class="cat-status-lbl">
+          <div class="cat-status-ico" style="background:${s.bg};color:${s.color}">${s.ico}</div>
+          ${s.label}
+        </div>
+        <div class="cat-bar-wrap">
+          <div class="cat-bar-fill" style="width:${pctNum(cat[s.key], max)}%;background:${s.color}"></div>
+        </div>
+        <div class="cat-val" style="color:${cat[s.key] > 0 ? s.color : '#c5cad8'}">
+          ${cat[s.key]} <span style="font-size:9.5px;color:var(--muted)">(${pct(cat[s.key], cat.total)})</span>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ════════════════════════════
+//  CLEAR SELECTION
+// ════════════════════════════
+function clearAgentSelection() {
+  selectedIdx = -1;
+  renderAgentList(document.getElementById('agentSearchInput').value);
+  document.getElementById('agentEmptyState').style.display = 'flex';
+  document.getElementById('agentDetailContent').style.display = 'none';
+  document.getElementById('clearSelBtn').style.display = 'none';
+}
+
+// ════════════════════════════
+//  FILTER AGENTS
+// ════════════════════════════
+function filterAgents() {
+  renderAgentList(document.getElementById('agentSearchInput').value);
+}
+
+// ════════════════════════════
+//  MAIN TAB SWITCH
+// ════════════════════════════
+function switchMain(id, el) {
+  document.querySelectorAll('.tab-bar .tab-btn').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mp-' + id).classList.add('active');
+  setTimeout(animateBars, 60);
+}
+
+// ════════════════════════════
+//  INNER TAB SWITCH
+// ════════════════════════════
+function switchInner(id, el) {
+  document.querySelectorAll('.inner-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.inner-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ip-' + id).classList.add('active');
+}
+
+// ════════════════════════════
+//  BAR ANIMATION
+// ════════════════════════════
+function animateBars() {
+  document.querySelectorAll('.sla-fill, .p-bar-fill').forEach(el => {
+    const target = el.style.width;
+    el.style.transition = 'none';
+    el.style.width = '0%';
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        el.style.transition = 'width 1s cubic-bezier(.4,0,.2,1)';
+        el.style.width = target;
+      }, 30);
+    });
+  });
+}
+
+// ════════════════════════════
+//  INIT
+// ════════════════════════════
+renderAgentList();
+window.addEventListener('load', () => setTimeout(animateBars, 400));
+
+document.getElementById('refreshBtn').addEventListener('click', function () {
+  this.style.opacity = '.4';
+  setTimeout(() => this.style.opacity = '1', 700);
+});
+</script>
+</body>
+</html>
