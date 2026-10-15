@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.endpoints import users, tickets, categories, departments, auth, roles, statuses, dashboard, universities, programs, batches, issue_types, templates
+from app.api.endpoints import users, tickets, categories, departments, auth, roles, statuses, dashboard, universities, programs, batches, issue_types, templates, teams
 
 api_router = APIRouter(
     prefix="/api",
@@ -7,6 +7,7 @@ api_router = APIRouter(
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(teams.router, prefix="/teams", tags=["teams"])
 api_router.include_router(tickets.router, prefix="/tickets", tags=["tickets"])
 api_router.include_router(statuses.router, prefix="/statuses", tags=["statuses"])
 api_router.include_router(roles.router, prefix="/roles", tags=["roles"])

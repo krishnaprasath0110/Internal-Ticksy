@@ -13,7 +13,7 @@ from app.db.models.program import Program
 from app.db.models.university import University
 from app.db.models.role import Role
 from app.core.security import get_password_hash
-from app.schemas.user_schema import UserCreate, UserUpdate, CandidateCreate, AgentCreate
+from app.schemas.user_schema import UserCreate, UserUpdate, CandidateCreate, AgentCreate, EmployeeCreate
 from typing import List, Union
 from fastapi import HTTPException, status
 import random
@@ -29,9 +29,8 @@ import logging
 
 def generate_password(length=12):
     """Generate a secure random password"""
-    # characters = string.ascii_letters + string.digits
-    # return ''.join(random.choice(characters) for _ in range(length))
-    return "123456"
+    characters = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
 def get_all_users(db: Session, role_name: str = None, category_id: int = None, department_id: int = None):
     """Get all users with optional filtering by role and department."""
@@ -69,7 +68,7 @@ def get_all_users(db: Session, role_name: str = None, category_id: int = None, d
     # Use distinct to prevent duplicate users when they have multiple departments/categories
     return query.distinct().all()
 
-def create_user(user: Union[CandidateCreate, AgentCreate], db: Session):
+def create_user(user: Union[CandidateCreate, AgentCreate, EmployeeCreate], db: Session, role_id: int | None = None):
     """Create a new user with role-specific fields and relationships"""
     # Check if user already exists
     db_user = get_user_by_email(db, email=user.email)
@@ -88,8 +87,9 @@ def create_user(user: Union[CandidateCreate, AgentCreate], db: Session):
         "name": user.name,
         "email": user.email,
         "password": hashed_password,
-        "role_id": user.role_id,
-        "template_id": user.template_id,
+        "role_id": role_id if role_id is not None else user.role_id,
+        "template_id": getattr(user, "template_id", None),
+        "team_id": getattr(user, "team_id", None),
         "is_active": user.is_active
     }
     

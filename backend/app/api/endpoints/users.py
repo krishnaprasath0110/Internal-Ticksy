@@ -1,19 +1,123 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.schemas.user_schema import UserResponse, CandidateCreate, AgentCreate, UserCreateResponse, UserUpdate
+from app.schemas.user_schema import (
+    UserResponse, CandidateCreate, AgentCreate, EmployeeCreate, EmployeeUpdate,
+    UserCreateResponse, UserUpdate
+)
 from app.repositories import user_repository
-from app.core.auth import get_current_user
+from app.core.auth import get_current_admin, get_current_user
 from app.services.email_service import email_service
 from app.services import email_templates
 from app.core.config import settings
 from typing import List, Optional
 import pandas as pd
 import io
+from app.db.models.role import Role
+from app.db.models.user import User
+from app.db.models.team import Team
 
 router = APIRouter()
 
+def get_or_create_employee_role(db: Session) -> Role:
+    role = db.query(Role).filter(Role.name == "employee").first()
+    if role:
+        return role
+
+    role = Role(name="employee", description="Internal employee")
+    db.add(role)
+    db.commit()
+    db.refresh(role)
+    return role
+
 # CREATE Operations
+@router.post('/employee', response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
+def create_employee(
+    user: EmployeeCreate,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    if user_repository.get_user_by_email(email=user.email, db=db):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
+    if user.team_id and not db.query(Team.id).filter(Team.id == user.team_id).first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Team not found")
+
+    employee_role = get_or_create_employee_role(db)
+    result = user_repository.create_user(user, db=db, role_id=employee_role.id)
+    employee = user_repository.get_user_by_id(db, result["user"].id)
+    if not employee:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create employee")
+
+    body = email_templates.get_new_user_credentials_template(
+        user_name=employee.name,
+        email=employee.email,
+        password=result["generated_password"],
+        website_url=settings.FRONTEND_URL,
+        reset_url=f"{settings.FRONTEND_URL}/forgot-password"
+    )
+    background_tasks.add_task(
+        email_service.send_email,
+        recipients=[employee.email],
+        subject="Welcome to Ticksy - Your Account Credentials",
+        body=body
+    )
+    return {
+        "user": UserResponse.model_validate(employee, from_attributes=True),
+        "generated_password": result["generated_password"]
+    }
+
+@router.put('/employee/{user_id}', response_model=UserResponse)
+def update_employee(
+    user_id: int,
+    payload: EmployeeUpdate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    employee = user_repository.get_user_by_id(db, user_id)
+    if not employee or employee.role.name != "employee":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+
+    updates = payload.model_dump(exclude_unset=True)
+    if "team_id" in updates and updates["team_id"] is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Employees must be assigned to a team"
+        )
+    if updates.get("team_id") and not db.query(Team.id).filter(Team.id == updates["team_id"]).first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Team not found")
+    if "email" in updates:
+        existing_user = user_repository.get_user_by_email(email=updates["email"], db=db)
+        if existing_user and existing_user.id != employee.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
+
+    for field, value in updates.items():
+        setattr(employee, field, value)
+    db.commit()
+    db.refresh(employee)
+    return user_repository.get_user_by_id(db, user_id)
+
+@router.delete('/employee/{user_id}', status_code=status.HTTP_204_NO_CONTENT)
+def deactivate_employee(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    employee = user_repository.get_user_by_id(db, user_id)
+    if not employee or employee.role.name != "employee":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+
+    employee.is_active = False
+    db.commit()
+    return None
+
+@router.get('/employees', response_model=List[UserResponse])
+def get_employees(
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    return user_repository.get_all_users(db, role_name="employee")
+
 @router.post('/agent', response_model=UserCreateResponse, status_code=status.HTTP_201_CREATED)
 def create_agent(
     user: AgentCreate,

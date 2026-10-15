@@ -15,10 +15,12 @@ class User(Base):
     password = Column(String, nullable=False)
     role_id = Column(Integer, ForeignKey('roles.id'), nullable=False)
     template_id = Column(Integer, ForeignKey('templates.id'), nullable=True)
+    team_id = Column(Integer, ForeignKey('teams.id'), nullable=True)
     is_active = Column(Boolean, default=True)
     
     # Relationships
     role = relationship("Role", back_populates="users")
+    team = relationship("Team", back_populates="employees")
     user_departments = relationship("UserDepartment", back_populates="user", cascade="all, delete-orphan")
     user_categories = relationship("UserCategory", back_populates="user",cascade="all, delete-orphan")
     user_batches = relationship("UserBatch", back_populates="user",cascade="all, delete-orphan")

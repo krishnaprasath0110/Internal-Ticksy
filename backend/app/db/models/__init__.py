@@ -21,6 +21,7 @@ from app.db.base import Base
 from app.db.models.issue_type import IssueType
 from app.db.models.disposition import Disposition
 from app.db.models.ticket import Ticket
+from app.db.models.team import Team
 from app.db.models.template import Template
 from app.db.models.template_department import TemplateDepartment
 from app.db.models.template_category import TemplateCategory

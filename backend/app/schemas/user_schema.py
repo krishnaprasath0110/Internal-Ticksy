@@ -20,11 +20,19 @@ class CategoryInfo(BaseModel):
     name: str
     description: str
 
+class TeamInfo(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        from_attributes = True
+
 class UserBase(BaseModel):
     name: str
     email: EmailStr
     role_id: int
     is_active: bool = True
+    team_id: Optional[int] = None
 
 
 class AgentCreate(UserBase):
@@ -50,6 +58,20 @@ class UserCreate(BaseModel):
 
 class CandidateCreate(UserCreate):
     pass
+
+class EmployeeCreate(BaseModel):
+    name: str
+    email: EmailStr
+    password: Optional[str] = None
+    template_id: Optional[int] = None
+    team_id: int
+    is_active: bool = True
+
+class EmployeeUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
+    team_id: Optional[int] = None
 
 class UserUpdate(UserBase):
     password: Optional[str] = None
@@ -92,6 +114,7 @@ class UserResponse(UserBase):
     user_departments: List[UserDepartment] = []
     user_categories: List[UserCategory] = []
     user_batches: List[UserBatch] = []
+    team: Optional['TeamInfo'] = None
 
     class Config:
         from_attributes = True

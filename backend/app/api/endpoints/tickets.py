@@ -36,6 +36,12 @@ async def create_ticket(
     current_user: UserResponse = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    if current_user.role.name == "candidate":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Student accounts can no longer create tickets"
+        )
+
     # Create ticket in database first (without attachments)
     ticket = TicketCreate(
         title=title,
@@ -566,6 +572,12 @@ async def assign_ticket_to_agent(
     db: Session = Depends(get_db)
 ):
     """Manually assign a ticket to a specific agent"""
+    if current_user.role.name not in ["agent", "admin", "department-manager", "department-supervisor"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only agents and managers can assign tickets"
+        )
+
     # Get ticket
     ticket = ticket_repository.get_ticket_by_id(ticket_id, db)
     if not ticket:
@@ -743,7 +755,7 @@ async def update_ticket_status(
     
     # If the status is "closed", require a closing reason
     if status_obj.name.lower() == "closed":
-        if current_user.role.name != "candidate" and (not ticket.get('issue_type') or not ticket.get('disposition')):
+        if current_user.role.name not in ["candidate", "employee"] and (not ticket.get('issue_type') or not ticket.get('disposition')):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Please select issue type and disposition before closing ticket"

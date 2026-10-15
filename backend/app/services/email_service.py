@@ -6,7 +6,6 @@ import imaplib
 import email
 import re
 import logging
-import smtplib
 from typing import Optional, List
 from sqlalchemy import and_
 from app.core.config import settings
@@ -30,8 +29,6 @@ from app.services.auto_response_service import generate_auto_response
 
 logger = logging.getLogger(__name__)
 
-smtplib.SMTP.debuglevel = 1
-
 class EmailService:
     def __init__(self):
         self.config = {
@@ -44,7 +41,7 @@ class EmailService:
             'MAIL_STARTTLS': settings.SMTP_TLS,
             'MAIL_SSL_TLS': False,
             'USE_CREDENTIALS': True,
-            'VALIDATE_CERTS': False
+            'VALIDATE_CERTS': True
         }
         self.connection_config = ConnectionConfig(**self.config)
         self.fastmail = FastMail(self.connection_config)
@@ -78,8 +75,8 @@ class EmailService:
             await self.fastmail.send_message(message)
             logger.info(f"Email sent to {recipients} with subject: {subject}")
             return True
-        except Exception as e:
-            logger.error(f"Failed to send email: {str(e)}")
+        except Exception:
+            logger.exception("Failed to send email")
             return False
     
     async def send_ticket_creation_notification(
@@ -526,13 +523,13 @@ class EmailService:
                             # DO NOT MARK EMAIL AS READ
                             continue  # Skip to next email without marking as read
                         
-                        # Check if user is a student (role_id == 5)
-                        if user.role_id != 5:
-                            logger.warning(f"⚠ Email from {sender_email} ({user.name}) rejected - sender is not a student (role_id: {user.role_id}). Email kept unread.")
+                        # Only internal employees may create or reply to tickets by email.
+                        if user.role.name != "employee":
+                            logger.warning(f"Email from {sender_email} ({user.name}) rejected - sender is not an employee. Email kept unread.")
                             # DO NOT MARK EMAIL AS READ
                             continue  # Skip to next email without marking as read
                         
-                        logger.info(f"✓ Processing email from student {user.name} ({sender_email}): {subject[:50]}...")
+                        logger.info(f"Processing email from employee {user.name} ({sender_email}): {subject[:50]}...")
                     
                     # Extract message headers
                     message_id = msg.get('Message-ID', '')
