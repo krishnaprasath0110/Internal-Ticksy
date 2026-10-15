@@ -25,9 +25,6 @@ from app.repositories.status_filters import status_is_open, status_is_in_progres
 
 logger = logging.getLogger(__name__)
 
-AUTO_CLOSE_MESSAGE = "Auto-closed due to no response from the student for 1 minute."
-AUTO_CLOSE_MINUTES = 1
-
 
 def apply_creator_program_batch_filter(query, program_id: int = None, batch_id: int = None):
     """Filter tickets by the creator's program or batch (user_batches)."""
@@ -1643,64 +1640,6 @@ async def check_delayed_tickets(db: Session, email_service: EmailService) -> Lis
     
     return delayed_tickets
 
-
-def auto_close_tickets_without_student_reply(db: Session) -> List[int]:
-    """Close open tickets 1 minute after a support reply without a student reply."""
-    current_time = datetime.now(timezone.utc)
-    open_tickets = (
-        db.query(Ticket)
-        .join(Status)
-        .filter(status_is_open())
-        .with_for_update()
-        .all()
-    )
-    closed_status = db.query(Status).filter(Status.name.ilike("closed")).first()
-    if not closed_status:
-        logger.error("Cannot auto-close tickets because the closed status does not exist")
-        return []
-
-    closed_ticket_ids = []
-    for ticket in open_tickets:
-        latest_thread = (db.query(Thread)
-            .filter(Thread.ticket_id == ticket.id, Thread.is_system == False)
-            .order_by(Thread.created_at.desc(), Thread.id.desc())
-            .first())
-        if not latest_thread or latest_thread.user_id == ticket.created_by:
-            continue
-
-        latest_reply_time = latest_thread.created_at
-        if latest_reply_time is None:
-            continue
-        if latest_reply_time.tzinfo is None:
-            latest_reply_time = latest_reply_time.replace(tzinfo=timezone.utc)
-        if current_time - latest_reply_time < timedelta(minutes=AUTO_CLOSE_MINUTES):
-            continue
-
-        duplicate = (db.query(Thread.id)
-            .filter(
-                Thread.ticket_id == ticket.id,
-                Thread.is_system == True,
-                Thread.message == AUTO_CLOSE_MESSAGE,
-            )
-            .first())
-        if duplicate:
-            continue
-
-        db.add(Thread(
-            ticket_id=ticket.id,
-            user_id=settings.SYSTEM_USER_ID,
-            message=AUTO_CLOSE_MESSAGE,
-            is_system=True,
-            attachments=[]
-        ))
-        ticket.status_id = closed_status.id
-        ticket.closed_by = settings.SYSTEM_USER_ID
-        ticket.closed_at = current_time
-        closed_ticket_ids.append(ticket.id)
-
-    if closed_ticket_ids:
-        db.commit()
-    return closed_ticket_ids
 
 def get_tickets_by_agent_categories(agent_id: int, db: Session, skip: int = 0, limit: int = 1000, resolution_time_range: str = None, ageing: str = None, priority: str = None, status: str = None, delayed: str = None) -> List[Dict]:
     """

@@ -9,7 +9,7 @@ from app.db.base import Base
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
 from app.services.email_service import email_service
-from app.repositories.ticket_repository import check_delayed_tickets, update_ticket_priority_by_frt, auto_close_tickets_without_student_reply
+from app.repositories.ticket_repository import check_delayed_tickets, update_ticket_priority_by_frt
 from app.services.auto_response_service import initialize as init_auto_response
 import logging
 
@@ -102,27 +102,6 @@ async def lifespan(app: FastAPI):
     )
     logger.info(f"Ticket delay check scheduler started. Interval: {TICKET_DELAY_CHECK_INTERVAL} hours")
 
-    def auto_close_tickets_wrapper():
-        db = SessionLocal()
-        try:
-            closed_ids = auto_close_tickets_without_student_reply(db)
-            if closed_ids:
-                logger.info(f"Auto-closed {len(closed_ids)} ticket(s) after 1 minute without student reply")
-        except Exception as e:
-            logger.error(f"Error auto-closing inactive tickets: {str(e)}")
-        finally:
-            db.close()
-
-    scheduler.add_job(
-        auto_close_tickets_wrapper,
-        'interval',
-        minutes=1,
-        max_instances=1,
-        misfire_grace_time=300,
-        executor='default'
-    )
-    logger.info("Ticket auto-close scheduler started. Inactivity threshold: 1 minute")
-    
     # Add FRT-based priority update job
     def update_frt_priorities_wrapper():
         import asyncio
