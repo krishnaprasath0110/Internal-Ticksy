@@ -145,11 +145,12 @@ app = FastAPI(
 # Set up CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
-    allow_credentials=True,  # Allow credentials (cookies, authorization headers)
-    allow_methods=["*"],    # Allow all methods
-    allow_headers=["*"],    # Allow all headers
-    expose_headers=["*"]    # Expose all headers to the frontend
+    allow_origins=[
+        "https://inticksy.futurense.com",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(api_router)
